@@ -6,11 +6,11 @@
 .DESCRIPTION
   In order to reduce time taken to collect data we'll leverage AD cmdlets.
 
-.PARAMETER <Parameter_Name>
-    <Brief description of parameter input required. Repeat this attribute if required>
+.PARAMETER SearchBase
+    This mandatory parameter specifies the distinguishedName of the OU where to start from data collection.
 
 .INPUTS
-  <Inputs if any, otherwise state None>
+  None
 
 .OUTPUTS
   <Outputs if any, otherwise state None - example: Log file stored in C:\Windows\Temp\<name>.log>
@@ -22,7 +22,7 @@
   Purpose/Change: Initial script development
   
 .EXAMPLE
-  C:\PS> Get-ADRecipients
+  C:\PS> Get-ADRecipients -SearchBase "CN=Users,DC=contoso,DC=com"
 
   
     Description
@@ -31,6 +31,13 @@
 
     This command collect Recipient Type Details in the specified Domain and OU.
 #>
+
+#-----------------------------------------------------------[Parameters]-----------------------------------------------------------
+# Parameter help description
+Param(
+    [Parameter(Mandatory=$true)]
+    [string]$SearchBase
+)
 
 #---------------------------------------------------------[Initialisations]--------------------------------------------------------
 
@@ -87,3 +94,5 @@ Function <FunctionName>{
 #Log-Start -LogPath $sLogPath -LogName $sLogName -ScriptVersion $sScriptVersion
 #Script Execution goes here
 #Log-Finish -LogPath $sLogFile
+
+$objects = Get-ADObject -ldapfilter "(msExchRecipientTypeDetails=*)" -SearchBase "OU=Users,DC=mailad,DC=it" -SearchScope Subtree -Properties *
